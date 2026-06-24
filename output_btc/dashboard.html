@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BTC-USDT SMA 273 Dashboard</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Outfit', sans-serif;
+            background-color: #F8FAFC;
+        }
+        .font-mono {
+            font-family: 'JetBrains Mono', monospace;
+        }
+    </style>
+</head>
+<body class="min-h-screen text-slate-800 antialiased">
+
+    <!-- Header -->
+    <header class="border-b border-slate-200 bg-white/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-3">
+                <div class="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-slate-900/20">
+                    ₿
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-900">BTC-USDT SMA 273</h1>
+                    <p class="text-xs text-slate-500">Dashboard Tattica Trend-Following</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs text-slate-500 bg-slate-100 px-3 py-1.5 rounded-lg">
+                <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 bg-rose-500"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-rose-500"></span>
+                </span>
+                <span>Ultimo aggiornamento: <strong class="font-medium">2026-06-24</strong></span>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+        
+        <!-- Status & Key Metrics Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Action Card -->
+            <div class="lg:col-span-1 rounded-2xl border p-6 flex flex-col justify-between bg-rose-50 border-rose-200 shadow-sm">
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between">
+                        <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Stato Strategia</span>
+                        <span class="px-2.5 py-1 text-xs font-bold rounded-full bg-rose-100 text-rose-800 uppercase">VENDERE</span>
+                    </div>
+                    <div>
+                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">VENDERE BTC / CASH (USDT)</h2>
+                        <p class="text-sm text-rose-700 mt-1.5 font-medium">
+                            Bitcoin si trova in fase ribassista sotto la SMA 273. Mantenere la liquidità in USDT.
+                        </p>
+                    </div>
+                </div>
+                <div class="pt-6 border-t border-slate-200/60 mt-6">
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-slate-500">Incrocio di trend (Crossover):</span>
+                        <span class="font-bold text-slate-900">NO</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Metric Card 1: BTC Price -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+                <div class="space-y-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Prezzo BTC attuale</span>
+                    <h3 class="text-4xl font-extrabold text-slate-900 font-mono tracking-tight">$62,687.91</h3>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span>Chiusura giornaliera (Yahoo Finance)</span>
+                </div>
+            </div>
+
+            <!-- Metric Card 2: SMA 273 -->
+            <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
+                <div class="space-y-2">
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Media Mobile SMA 273</span>
+                    <h3 class="text-4xl font-extrabold text-slate-900 font-mono tracking-tight">$83,879.40</h3>
+                </div>
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
+                    <span class="text-slate-500">Distanza percentuale:</span>
+                    <span class="font-bold font-mono text-rose-600">
+                        -25.26%
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between">
+                <div>
+                    <h3 class="text-lg font-bold text-slate-900">Andamento Recente (Ultimi 180 Giorni)</h3>
+                    <p class="text-xs text-slate-400">Confronto tra prezzo di chiusura e linea di trend SMA 273</p>
+                </div>
+            </div>
+            <div class="h-96 relative">
+                <canvas id="trendChart"></canvas>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Historical Data Table -->
+            <div class="lg:col-span-1 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-slate-100">
+                    <h3 class="text-base font-bold text-slate-900">Ultimi 15 Giorni</h3>
+                    <p class="text-xs text-slate-400">Verifica i dati quotidiani storici</p>
+                </div>
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/70 border-b border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                <th class="px-6 py-3 font-semibold">Data</th>
+                                <th class="px-6 py-3 font-semibold">BTC Close</th>
+                                <th class="px-6 py-3 font-semibold">SMA 273</th>
+                                <th class="px-6 py-3 font-semibold">Diff %</th>
+                                <th class="px-6 py-3 font-semibold">Stato</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-24</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$62,687.91</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$83,879.40</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-25.26%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-23</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$62,668.02</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$84,064.90</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-25.45%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-22</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$63,952.11</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$84,245.65</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-24.09%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-21</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$63,237.54</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$84,424.39</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-25.10%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-20</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$64,239.68</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$84,615.12</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-24.08%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-19</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$63,540.84</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$84,803.70</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-25.07%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-18</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$62,896.47</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$84,994.72</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-26.00%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-17</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$64,418.45</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$85,193.40</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-24.39%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-16</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$65,600.64</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$85,384.06</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-23.17%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-15</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$66,289.50</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$85,571.76</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-22.53%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-14</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$65,710.40</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$85,751.82</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-23.37%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-13</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$64,421.32</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$85,933.86</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-25.03%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-12</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$63,543.20</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$86,122.61</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-26.22%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-11</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$63,561.05</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$86,315.14</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-26.36%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+        <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+            <td class="px-6 py-4 text-sm font-medium text-slate-900">2026-06-10</td>
+            <td class="px-6 py-4 text-sm text-slate-700 font-mono">$61,449.29</td>
+            <td class="px-6 py-4 text-sm text-slate-500 font-mono">$86,505.42</td>
+            <td class="px-6 py-4 text-sm font-semibold font-mono text-rose-600">-28.96%</td>
+            <td class="px-6 py-4 text-sm"><span class="px-2 py-0.5 text-xs font-semibold rounded bg-rose-100 text-rose-800">CASH</span></td>
+        </tr>
+        
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Historical Trades Table -->
+            <div class="lg:col-span-2 rounded-2xl border border-slate-200 bg-white shadow-sm overflow-hidden flex flex-col">
+                <div class="px-6 py-4 border-b border-slate-100">
+                    <h3 class="text-base font-bold text-slate-900">Registro Storico delle Operazioni (Trade Log)</h3>
+                    <p class="text-xs text-slate-400">Storico dei segnali di acquisto e vendita eseguiti dalla strategia</p>
+                </div>
+                <div class="overflow-x-auto flex-1">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50/70 border-b border-slate-100 text-xs font-bold uppercase tracking-wider text-slate-400">
+                                <th class="px-6 py-3 font-semibold">Data</th>
+                                <th class="px-6 py-3 font-semibold">Tipo</th>
+                                <th class="px-6 py-3 font-semibold">Prezzo Close</th>
+                                <th class="px-6 py-3 font-semibold">Prezzo Esec.</th>
+                                <th class="px-6 py-3 font-semibold">Quantità</th>
+                                <th class="px-6 py-3 font-semibold">Valore USD</th>
+                                <th class="px-6 py-3 font-semibold">Fee USD</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-slate-100">
+                            
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-sm font-medium text-slate-900">2025-11-09</td>
+                <td class="px-6 py-4 text-sm"><span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-100 text-rose-800 uppercase">SELL</span></td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$104,722.96</td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$104,513.51</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">0.081238</td>
+                <td class="px-6 py-4 text-sm text-slate-900 font-semibold font-mono">$8,490.49</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">$17.02</td>
+            </tr>
+            
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-sm font-medium text-slate-900">2024-09-15</td>
+                <td class="px-6 py-4 text-sm"><span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800 uppercase">BUY</span></td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$59,132.00</td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$59,250.26</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">0.081238</td>
+                <td class="px-6 py-4 text-sm text-slate-900 font-semibold font-mono">$4,813.39</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">$9.63</td>
+            </tr>
+            
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-sm font-medium text-slate-900">2024-09-08</td>
+                <td class="px-6 py-4 text-sm"><span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-rose-100 text-rose-800 uppercase">SELL</span></td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$54,869.95</td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$54,760.21</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">0.087899</td>
+                <td class="px-6 py-4 text-sm text-slate-900 font-semibold font-mono">$4,813.39</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">$9.65</td>
+            </tr>
+            
+            <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                <td class="px-6 py-4 text-sm font-medium text-slate-900">2023-01-22</td>
+                <td class="px-6 py-4 text-sm"><span class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-emerald-100 text-emerald-800 uppercase">BUY</span></td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$22,707.88</td>
+                <td class="px-6 py-4 text-sm text-slate-700 font-mono">$22,753.30</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">0.087899</td>
+                <td class="px-6 py-4 text-sm text-slate-900 font-semibold font-mono">$2,000.00</td>
+                <td class="px-6 py-4 text-sm text-slate-500 font-mono">$4.00</td>
+            </tr>
+            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="border-t border-slate-200 bg-white py-6 mt-12 text-center text-xs text-slate-400">
+        <p>Progetto Momentum-trading-crypto • Modellato per scopi educativi ed operativi.</p>
+    </footer>
+
+    <!-- Chart Configuration Script -->
+    <script>
+        const ctx = document.getElementById('trendChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ["2025-12-27", "2025-12-28", "2025-12-29", "2025-12-30", "2025-12-31", "2026-01-01", "2026-01-02", "2026-01-03", "2026-01-04", "2026-01-05", "2026-01-06", "2026-01-07", "2026-01-08", "2026-01-09", "2026-01-10", "2026-01-11", "2026-01-12", "2026-01-13", "2026-01-14", "2026-01-15", "2026-01-16", "2026-01-17", "2026-01-18", "2026-01-19", "2026-01-20", "2026-01-21", "2026-01-22", "2026-01-23", "2026-01-24", "2026-01-25", "2026-01-26", "2026-01-27", "2026-01-28", "2026-01-29", "2026-01-30", "2026-01-31", "2026-02-01", "2026-02-02", "2026-02-03", "2026-02-04", "2026-02-05", "2026-02-06", "2026-02-07", "2026-02-08", "2026-02-09", "2026-02-10", "2026-02-11", "2026-02-12", "2026-02-13", "2026-02-14", "2026-02-15", "2026-02-16", "2026-02-17", "2026-02-18", "2026-02-19", "2026-02-20", "2026-02-21", "2026-02-22", "2026-02-23", "2026-02-24", "2026-02-25", "2026-02-26", "2026-02-27", "2026-02-28", "2026-03-01", "2026-03-02", "2026-03-03", "2026-03-04", "2026-03-05", "2026-03-06", "2026-03-07", "2026-03-08", "2026-03-09", "2026-03-10", "2026-03-11", "2026-03-12", "2026-03-13", "2026-03-14", "2026-03-15", "2026-03-16", "2026-03-17", "2026-03-18", "2026-03-19", "2026-03-20", "2026-03-21", "2026-03-22", "2026-03-23", "2026-03-24", "2026-03-25", "2026-03-26", "2026-03-27", "2026-03-28", "2026-03-29", "2026-03-30", "2026-03-31", "2026-04-01", "2026-04-02", "2026-04-03", "2026-04-04", "2026-04-05", "2026-04-06", "2026-04-07", "2026-04-08", "2026-04-09", "2026-04-10", "2026-04-11", "2026-04-12", "2026-04-13", "2026-04-14", "2026-04-15", "2026-04-16", "2026-04-17", "2026-04-18", "2026-04-19", "2026-04-20", "2026-04-21", "2026-04-22", "2026-04-23", "2026-04-24", "2026-04-25", "2026-04-26", "2026-04-27", "2026-04-28", "2026-04-29", "2026-04-30", "2026-05-01", "2026-05-02", "2026-05-03", "2026-05-04", "2026-05-05", "2026-05-06", "2026-05-07", "2026-05-08", "2026-05-09", "2026-05-10", "2026-05-11", "2026-05-12", "2026-05-13", "2026-05-14", "2026-05-15", "2026-05-16", "2026-05-17", "2026-05-18", "2026-05-19", "2026-05-20", "2026-05-21", "2026-05-22", "2026-05-23", "2026-05-24", "2026-05-25", "2026-05-26", "2026-05-27", "2026-05-28", "2026-05-29", "2026-05-30", "2026-05-31", "2026-06-01", "2026-06-02", "2026-06-03", "2026-06-04", "2026-06-05", "2026-06-06", "2026-06-07", "2026-06-08", "2026-06-09", "2026-06-10", "2026-06-11", "2026-06-12", "2026-06-13", "2026-06-14", "2026-06-15", "2026-06-16", "2026-06-17", "2026-06-18", "2026-06-19", "2026-06-20", "2026-06-21", "2026-06-22", "2026-06-23", "2026-06-24"],
+                datasets: [
+                    {
+                        label: 'Prezzo BTC',
+                        data: [87802.15625, 87835.8359375, 87138.140625, 88430.1328125, 87508.828125, 88731.984375, 89944.6953125, 90603.1875, 91413.4921875, 93882.5546875, 93729.03125, 91308.0546875, 91027.125, 90513.1015625, 90386.6484375, 90827.4609375, 91192.9921875, 95321.78125, 96929.328125, 95551.1875, 95525.1171875, 95099.921875, 93634.4296875, 92553.59375, 88310.90625, 89376.9609375, 89462.453125, 89503.875, 89110.734375, 86572.21875, 88267.140625, 89102.5703125, 89184.5703125, 84561.5859375, 84128.65625, 78621.1171875, 76974.4453125, 78688.765625, 75633.546875, 73019.703125, 62702.09765625, 70555.390625, 69281.96875, 70264.7265625, 70120.78125, 68793.9609375, 66991.96875, 66221.84375, 68857.84375, 69767.625, 68788.1875, 68843.15625, 67494.21875, 66425.3203125, 66957.5234375, 68005.421875, 68003.765625, 67659.390625, 64616.73828125, 64080.04296875, 67960.125, 67453.7734375, 65881.796875, 66995.859375, 65738.1015625, 68775.8515625, 68293.6484375, 72710.578125, 70841.125, 68136.4921875, 67272.59375, 65969.78125, 68402.3828125, 69926.921875, 70204.8828125, 70493.4609375, 70968.265625, 71214.625, 72789.9140625, 74861.0859375, 73922.4765625, 71245.578125, 69912.7890625, 70522.5859375, 68711.5234375, 67845.2109375, 70914.859375, 70517.859375, 71309.8828125, 68791.625, 66338.375, 66319.6953125, 65954.921875, 66691.4453125, 68233.3125, 68078.5546875, 66888.5703125, 66931.1015625, 67290.515625, 68981.8984375, 68859.828125, 71940.703125, 71123.359375, 71767.828125, 72979.046875, 73054.2734375, 70753.40625, 74484.640625, 74181.609375, 74805.078125, 75152.1328125, 77126.875, 75726.2109375, 73856.3515625, 75872.5234375, 76352.7734375, 78203.1015625, 78268.953125, 77455.3125, 77612.015625, 78657.5390625, 77366.625, 76350.671875, 75776.1328125, 76304.3203125, 78179.0, 78657.25, 78538.2265625, 79827.90625, 80927.0546875, 81427.53125, 80009.9921875, 80186.765625, 80664.3671875, 82138.9296875, 81728.296875, 80477.4921875, 79277.1171875, 81051.25, 79065.6796875, 78131.4375, 77429.3515625, 76954.171875, 76750.90625, 77457.7734375, 77539.171875, 75488.2421875, 76673.3671875, 76981.125, 77279.9296875, 75825.734375, 74344.703125, 73536.5546875, 73372.5234375, 73754.8359375, 73579.6875, 71319.7734375, 66703.65625, 64014.3671875, 63801.57421875, 60922.66796875, 60867.4140625, 63239.51953125, 63090.58984375, 61643.78125, 61449.2890625, 63561.0546875, 63543.19921875, 64421.32421875, 65710.3984375, 66289.5, 65600.640625, 64418.4453125, 62896.47265625, 63540.8359375, 64239.67578125, 63237.5390625, 63952.10546875, 62668.01953125, 62687.91015625],
+                        borderColor: '#0F172A',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        fill: false
+                    },
+                    {
+                        label: 'SMA 273',
+                        data: [104424.90264423077, 104445.0539720696, 104461.86432577838, 104473.80923763737, 104492.20893429487, 104512.82855425825, 104535.1761389652, 104561.177569826, 104609.52558379121, 104663.17839972528, 104727.1237408425, 104759.11678685897, 104800.87863438645, 104826.91623740843, 104845.595867674, 104871.75881410256, 104896.11999198717, 104938.80420100733, 104986.0403216575, 105025.07122825092, 105065.63647550366, 105102.40024038461, 105133.38970924908, 105151.83178800366, 105133.03697344322, 105117.20492788461, 105100.78974931319, 105081.68123282967, 105061.40212912088, 105035.09214743589, 105010.50749771063, 104991.52501144688, 104973.12668841575, 104929.42430746337, 104882.60594093407, 104819.34337797618, 104755.82128548535, 104696.99605082418, 104619.45418383699, 104531.49587912088, 104383.00004292582, 104264.26209077382, 104134.53916266025, 104010.57713770604, 103890.82559237638, 103761.24371852106, 103627.37029246795, 103489.92415006868, 103363.06903903389, 103240.63877918955, 103102.69804544414, 102968.03495592948, 102824.0903874771, 102665.6553771749, 102501.86139251373, 102357.96990899726, 102212.22855139652, 102060.66811183609, 101896.47899496337, 101731.95665922618, 101586.01452323717, 101446.13179658883, 101306.50991586539, 101168.62627346611, 101022.42114526099, 100886.50290464744, 100750.46326980312, 100633.16874141483, 100520.58695341117, 100387.78896233975, 100247.33829842033, 100101.46332703755, 99948.01380780678, 99800.28372538919, 99659.32496279762, 99529.52425309065, 99400.86966288919, 99275.38328468407, 99155.37555803571, 99038.3950749771, 98926.01910199175, 98802.80390052656, 98675.43576865843, 98555.3368103251, 98432.4581187042, 98311.05910885989, 98184.08872767857, 98053.95036343865, 97921.89404475733, 97782.08314732143, 97632.81554773351, 97482.60306490384, 97327.17944425366, 97179.03332474816, 97041.7990069826, 96892.41891311813, 96735.79105139652, 96585.2297533196, 96435.26395089286, 96287.8274238782, 96143.35847355769, 96007.79228193681, 95860.52783024267, 95698.55209764194, 95535.4094408196, 95372.84184695513, 95195.68905963827, 95029.51666952838, 94869.82590716575, 94708.89759329213, 94547.22099645146, 94397.4907709478, 94242.86159283425, 94083.72445913461, 93931.46432864011, 93771.60117616758, 93623.05956673535, 93476.17661114926, 93328.99503491301, 93181.24649439103, 93031.82908367674, 92883.26552483975, 92730.98905391483, 92576.9412345467, 92432.4215172848, 92303.69959077382, 92179.63488724816, 92048.94094837454, 91919.84213312728, 91798.17769860348, 91675.0990584936, 91537.78438358517, 91404.07756696429, 91272.81019631411, 91136.66430574634, 91001.1216374771, 90855.71719036173, 90694.29980826465, 90557.63926568223, 90417.2265481914, 90273.05103880494, 90126.44403903389, 89982.49480597528, 89850.33263221153, 89715.4719408196, 89587.70688816391, 89436.11039091117, 89294.34862923535, 89160.73212854854, 89040.42289091117, 88908.63929429946, 88773.55739182692, 88630.67002918955, 88502.32456215659, 88373.92443624084, 88246.97563244047, 88108.03489869506, 87945.04248225733, 87770.28481284341, 87598.40925480769, 87416.25424965659, 87235.45834764194, 87059.8975503663, 86880.48055460164, 86697.74514938187, 86505.41522149726, 86315.13505895146, 86122.61352449634, 85933.86193624084, 85751.82069883242, 85571.7643801511, 85384.06274324634, 85193.40317364926, 84994.71917925825, 84803.70077838827, 84615.12097928114, 84424.39367273351, 84245.65227220696, 84064.8959334936, 83879.39878090659],
+                        borderColor: '#F59E0B',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        tension: 0.1,
+                        borderDash: [5, 5],
+                        fill: false
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                        labels: {
+                            font: { family: 'Outfit', size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        mode: 'index',
+                        intersect: false,
+                        titleFont: { family: 'Outfit' },
+                        bodyFont: { family: 'Outfit' }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: {
+                            font: { family: 'Outfit' },
+                            maxTicksLimit: 12
+                        }
+                    },
+                    y: {
+                        grid: { color: '#E2E8F0', borderDash: [2, 2] },
+                        ticks: {
+                            font: { family: 'Outfit' },
+                            callback: function(value) { return '$' + value.toLocaleString(); }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+
+</body>
+</html>

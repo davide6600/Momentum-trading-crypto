@@ -1,0 +1,34 @@
+# Secrets
+config/secrets.yaml
+
+# Data (large, regenerable)
+data/
+
+# Output (regenerable)
+output/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.egg
+
+# Env
+.env
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db

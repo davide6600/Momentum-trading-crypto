@@ -1,0 +1,53 @@
+# Improved Strategy configuration for altcoin momentum
+# Based on robustness sweep analysis — optimized parameters
+
+# ── Signal Parameters ──
+lookback_days: 30                # Keep at 30: works best with relaxed breadth threshold
+short_lookback_days: 7           # R7: 7-day return for blow-off filter
+rebalance_day: sunday            # day of weekly rebalance
+rebalance_hour_utc: 13           # 13:00 UTC on rebalance day
+holding_period_weeks: 2          # hold for 2 weeks (confirmed optimal by sweep)
+ranking_metric: vol_adj          # volatility-adjusted momentum (confirmed best)
+weighting_scheme: vol_parity     # inverse-volatility weighting
+
+# ── Selection Rules ──
+top_quantile: 0.20               # top 20% of universe by R30
+min_momentum_threshold: 0.15     # R30 must be > +15%
+max_short_term_runup: 0.50       # R7 must be < +50% (keep original: tightening hurts winners)
+n_winners: 3                     # 3 concentrated positions (confirmed best)
+min_recent_volume_usd_7d: 3000000  # 7-day avg volume filter ($3M)
+
+# ── Regime Filters ──
+enable_btc_ma_filter: true       # Only take entries if BTC is above its 200D MA
+enable_breadth_filter: true      # Only take entries if >X% of universe is above 200D MA
+min_breadth_pct: 0.30            # Breadth threshold: 30% (restore original, 25% was too loose)
+defensive_asset: cash            # cash during regime halt
+
+# ── Re-Entry Acceleration ──
+enable_breadth_acceleration: true  # Allow partial re-entry on breadth acceleration
+breadth_accel_delta: 0.10          # If breadth rises >10pp in 1 week, allow entry
+breadth_accel_capital_pct: 0.50    # Use 50% of capital on accelerated re-entry
+
+# ── Capital & Position Sizing ──
+strategy_capital_usd: 2000       # total strategy capital
+risk_per_trade_pct: 0.03         # max 3% of capital risked per trade at stop
+max_per_position_pct: 0.40       # hard cap: 40% of capital per position (relaxed for 3-pos portfolio)
+leverage: 1.0                    # no leverage
+
+# ── Risk Management ──
+stop_loss_pct: -0.18             # wider stop: -18% (ATR is primary, this is fallback)
+take_profit_pct: 0.40            # take profit at +40%
+kill_switch_weekly_pct: -0.15    # halt trading if weekly PnL < -15%
+
+# ── ATR-Based Trailing Stop ──
+enable_atr_stop: true            # Use ATR-based stops instead of fixed %
+atr_period: 14                   # ATR lookback period (14 days)
+atr_multiplier: 3.0              # Stop at entry - 3.0 * ATR (balanced)
+
+# ── Mean-Reversion Exclusion ──
+enable_mean_reversion_filter: true  # Exclude coins already reversing
+max_retracement_from_7d_high: 0.20  # Skip if >20% retraced from 7-day high
+
+# ── Transaction Cost Model ──
+fee_per_side_pct: 0.001          # 0.10% per side (Binance taker)
+slippage_pct: 0.001              # 0.10% slippage estimate

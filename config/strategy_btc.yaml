@@ -1,0 +1,13 @@
+# Configuration for BTC-USDT Trend-Following Strategy
+
+# ── Signal Parameters ──
+lookback_days: 273                # SMA lookback days for trend detection
+rebalance_day: sunday            # day of weekly rebalance
+rebalance_hour_utc: 13           # 13:00 UTC on rebalance day
+
+# ── Capital ──
+strategy_capital_usd: 2000.0     # total strategy capital
+
+# ── Transaction Cost Model ──
+fee_per_side_pct: 0.001          # 0.10% per side (Binance taker)
+slippage_pct: 0.001              # 0.10% slippage estimate

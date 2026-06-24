@@ -1,0 +1,45 @@
+# Universe configuration for altcoin momentum strategy
+# Source of truth: altcoin-momentum.md §4
+
+exchange: binance
+
+# Market cap / size filter
+# We use volume as a proxy for size since Binance doesn't provide market cap directly
+top_n_by_marketcap: 150          # aspirational; enforced via volume filter in practice
+
+# Liquidity filters
+min_avg_volume_usd_30d: 5000000  # $5M minimum 30-day avg daily volume
+min_history_days: 90             # coins with < 90 days of data are excluded
+
+# Quote currency for all pairs
+quote_currency: USDT
+
+# Stablecoin blacklist — these are never eligible as momentum winners
+stablecoin_blacklist:
+  - USDT
+  - USDC
+  - DAI
+  - BUSD
+  - TUSD
+  - FDUSD
+  - USDP
+  - PYUSD
+  - FRAX
+  - LUSD
+  - GUSD
+  - UST
+  - USDD
+  - CEUR
+  - AEUR
+  - EUR
+
+# Wrapped / duplicate tokens to exclude
+wrapped_blacklist:
+  - WBTC
+  - WBETH
+  - STETH
+  - CBETH
+  - BETH
+
+# BTC and ETH ARE eligible as momentum winners (per user decision)
+# They are NOT excluded from the universe.

@@ -1,0 +1,39 @@
+# Strategy configuration for altcoin momentum
+# Source of truth: altcoin-momentum.md §5–§7
+
+# ── Signal Parameters ──
+lookback_days: 30                # R30: 30-day return for ranking
+short_lookback_days: 7           # R7: 7-day return for blow-off filter
+rebalance_day: sunday            # day of weekly rebalance
+rebalance_hour_utc: 13           # 13:00 UTC on rebalance day
+holding_period_weeks: 2          # hold for 2 weeks (optimized from 1 week)
+ranking_metric: vol_adj          # ranking metric: return (default) or vol_adj
+weighting_scheme: vol_parity     # equal or vol_parity
+
+# ── Selection Rules ──
+top_quantile: 0.20               # top 20% of universe by R30
+min_momentum_threshold: 0.15     # R30 must be > +15%
+max_short_term_runup: 0.50       # R7 must be < +50% (avoid parabolic pumps; tightened from +100%)
+n_winners: 3                     # max positions in basket (optimized from 5)
+min_recent_volume_usd_7d: 3000000  # 7-day avg volume filter ($3M)
+
+# ── Regime Filters ──
+enable_btc_ma_filter: true       # Only take entries if BTC is above its 200D MA
+enable_breadth_filter: true      # Only take entries if > X% of universe is above 200D MA
+min_breadth_pct: 0.30            # Breadth threshold: 30% (relaxed from 50%)
+defensive_asset: cash             # cash, BTC, QQQ, SPY, etc.
+
+# ── Capital & Position Sizing ──
+strategy_capital_usd: 2000       # total strategy capital
+risk_per_trade_pct: 0.03         # max 3% of capital risked per trade at stop
+max_per_position_pct: 0.25       # hard cap: 25% of capital per position
+leverage: 1.0                   # no leverage
+
+# ── Risk Management ──
+stop_loss_pct: -0.12             # close position if -12% from entry
+take_profit_pct: 0.35            # optional: take profit at +35%
+kill_switch_weekly_pct: -0.15    # halt trading if weekly PnL < -15%
+
+# ── Transaction Cost Model ──
+fee_per_side_pct: 0.001          # 0.10% per side (Binance taker)
+slippage_pct: 0.001              # 0.10% slippage estimate
