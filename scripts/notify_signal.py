@@ -463,7 +463,7 @@ def main():
         f"• *Media SMA 273*: ${sma_val:,.2f}\n"
         f"• *Distanza dalla Media*: {distance_pct:+.2f}%\n\n"
         f"💡 *Azione*: {action_info}\n\n"
-        f"🔗 _Dettagli e storico consultabili nel dashboard locale:_ `output_btc/dashboard.html`"
+        f"🔗 _Grafici e storico aggiornati:_ https://davide6600.github.io/Momentum-trading-crypto/output_btc/dashboard.html"
     )
     
     print("\nCalculated Signal Status:")
