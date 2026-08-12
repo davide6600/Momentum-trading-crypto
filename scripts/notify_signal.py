@@ -73,7 +73,7 @@ def send_telegram_notification(token, chat_id, message):
     payload = {
         "chat_id": chat_id,
         "text": message,
-        "parse_mode": "Markdown"
+        "parse_mode": "HTML"
     }
     
     try:
@@ -89,8 +89,12 @@ def send_telegram_notification(token, chat_id, message):
                 print("Telegram notification sent successfully.")
             else:
                 print(f"Telegram API Error: {res}")
+    except urllib.error.HTTPError as e:
+        err_body = e.read().decode('utf-8')
+        print(f"Failed to send Telegram message: {e} - Details: {err_body}")
     except Exception as e:
         print(f"Failed to send Telegram message: {e}")
+
 
 # ── Generate HTML Dashboard ──
 def generate_html_dashboard(df, close_price, sma_val, current_signal, prev_signal, last_update_str):
@@ -446,7 +450,7 @@ def main():
     action_info = ""
     
     if current_signal != prev_signal:
-        action_info = "⚠️ *CAMBIO DI SEGNALE RILEVATO!* ⚠️\n"
+        action_info = "⚠️ <b>CAMBIO DI SEGNALE RILEVATO!</b> ⚠️\n"
         if current_signal == 1:
             action_info += "👉 Azione: acquista BTC al prezzo corrente (Close)."
         else:
@@ -457,13 +461,13 @@ def main():
     distance_pct = ((close_price / sma_val) - 1.0) * 100
     
     telegram_msg = (
-        f"📊 *REPORT SETTIMANALE BTC-USDT (SMA 273)* 📊\n\n"
-        f"• *Stato Trend*: {status}\n"
-        f"• *Prezzo BTC (Close)*: ${close_price:,.2f}\n"
-        f"• *Media SMA 273*: ${sma_val:,.2f}\n"
-        f"• *Distanza dalla Media*: {distance_pct:+.2f}%\n\n"
-        f"💡 *Azione*: {action_info}\n\n"
-        f"🔗 _Grafici e storico aggiornati:_ https://davide6600.github.io/Momentum-trading-crypto/output_btc/dashboard.html"
+        f"📊 <b>REPORT SETTIMANALE BTC-USDT (SMA 273)</b> 📊\n\n"
+        f"• <b>Stato Trend</b>: {status}\n"
+        f"• <b>Prezzo BTC (Close)</b>: ${close_price:,.2f}\n"
+        f"• <b>Media SMA 273</b>: ${sma_val:,.2f}\n"
+        f"• <b>Distanza dalla Media</b>: {distance_pct:+.2f}%\n\n"
+        f"💡 <b>Azione</b>: {action_info}\n\n"
+        f"🔗 <i>Grafici e storico aggiornati:</i> https://davide6600.github.io/Momentum-trading-crypto/output_btc/dashboard.html"
     )
     
     print("\nCalculated Signal Status:")
