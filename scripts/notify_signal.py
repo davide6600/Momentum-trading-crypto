@@ -146,21 +146,52 @@ def generate_html_dashboard(df, close_price, sma_val, current_signal, prev_signa
     chart_prices = [float(x) for x in chart_df["close"]]
     chart_sma = [float(x) for x in chart_df["SMA_273"]]
 
-    # Status styling
+    # Calculations for intuitive display
+    distance_pct = ((close_price / sma_val) - 1.0) * 100
+    required_gain_pct = ((sma_val / close_price) - 1.0) * 100
+
+    # Status styling & text definitions
     if current_signal == 1:
-        status_title = "COMPRARE BTC / LONG"
-        status_bg = "bg-emerald-500"
+        trend_status_title = "TREND RIALZISTA"
+        model_pos_title = "100% BITCOIN (LONG)"
         status_card_bg = "bg-emerald-50 border-emerald-200"
         status_badge_color = "bg-emerald-100 text-emerald-800"
         status_text_color = "text-emerald-700"
         status_dot = "bg-emerald-500"
+        
+        if current_signal != prev_signal:
+            action_title = "⚠️ NUOVO SEGNALE: COMPRARE BTC"
+            action_subtitle = "Entrare a mercato ed acquistare BTC al prezzo di chiusura corrente."
+        else:
+            action_title = "🟢 MANTIENI POSIZIONE IN BTC"
+            action_subtitle = "Trend rialzista confermato. Nessun cambio di posizione richiesto."
+            
+        intuitive_explanation = (
+            f"Il prezzo di Bitcoin (${close_price:,.2f}) è superiore del <strong>{distance_pct:+.2f}%</strong> rispetto alla media mobile a 273 giorni (${sma_val:,.2f}). "
+            f"La strategia quantitativa raccomanda di rimanere investiti al 100% in Bitcoin per catturare il trend rialzista in corso."
+        )
     else:
-        status_title = "VENDERE BTC / CASH (USDT)"
-        status_bg = "bg-rose-500"
-        status_card_bg = "bg-rose-50 border-rose-200"
-        status_badge_color = "bg-rose-100 text-rose-800"
-        status_text_color = "text-rose-700"
-        status_dot = "bg-rose-500"
+        trend_status_title = "TREND RIBASSISTA"
+        model_pos_title = "100% LIQUIDITÀ (USDT)"
+        status_card_bg = "bg-amber-50 border-amber-200"
+        status_badge_color = "bg-amber-100 text-amber-800"
+        status_text_color = "text-amber-800"
+        status_dot = "bg-amber-500"
+        
+        if current_signal != prev_signal:
+            action_title = "⚠️ NUOVO SEGNALE: VENDERE BTC"
+            action_subtitle = "Uscire dal mercato: vendere BTC e convertire l'intero portafoglio in USDT."
+        else:
+            action_title = "⚪ MANTIENI LIQUIDITÀ IN USDT"
+            action_subtitle = "Nessun acquisto da fare. Il modello resta al sicuro in liquidità."
+            
+        intuitive_explanation = (
+            f"Bitcoin (${close_price:,.2f}) si trova del <strong>{abs(distance_pct):.2f}%</strong> al di sotto della media mobile a 273 giorni (${sma_val:,.2f}).<br>"
+            f"Per riattivare un segnale d'acquisto, BTC deve salire di almeno il <strong>+{required_gain_pct:.2f}%</strong>.<br><br>"
+            f"💡 <strong>Come interpretare questo stato:</strong><br>"
+            f"• <strong>Se segui la strategia automatizzata:</strong> Resti al 100% in USDT in attesa del prossimo segnale rialzista.<br>"
+            f"• <strong>Se possiedi già BTC in portafoglio:</strong> Il segnale teorico della strategia suggerisce di liquidare in USDT per proteggersi dai ribassi. Se scegli di mantenere i tuoi BTC, ti stai esponendo al rischio di ulteriori cali di mercato finché il prezzo non supererà nuovamente la soglia di ${sma_val:,.2f}."
+        )
 
     html_content = f"""<!DOCTYPE html>
 <html lang="it">
@@ -212,24 +243,29 @@ def generate_html_dashboard(df, close_price, sma_val, current_signal, prev_signa
         
         <!-- Status & Key Metrics Grid -->
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Action Card -->
+            <!-- Action & Strategy Card -->
             <div class="lg:col-span-1 rounded-2xl border p-6 flex flex-col justify-between {status_card_bg} shadow-sm">
                 <div class="space-y-4">
                     <div class="flex items-center justify-between">
                         <span class="text-xs font-bold uppercase tracking-wider text-slate-500">Stato Strategia</span>
-                        <span class="px-2.5 py-1 text-xs font-bold rounded-full {status_badge_color} uppercase">{status_title.split(' ')[0]}</span>
+                        <span class="px-2.5 py-1 text-xs font-bold rounded-full {status_badge_color} uppercase">{trend_status_title}</span>
                     </div>
                     <div>
-                        <h2 class="text-3xl font-extrabold text-slate-900 tracking-tight">{status_title}</h2>
-                        <p class="text-sm {status_text_color} mt-1.5 font-medium">
-                            {"Bitcoin si trova in fase rialzista sopra la SMA 273. Mantenere l'esposizione." if current_signal == 1 else "Bitcoin si trova in fase ribassista sotto la SMA 273. Mantenere la liquidità in USDT."}
+                        <span class="text-xs text-slate-500 font-semibold uppercase tracking-wide">Azione Consigliata</span>
+                        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight mt-0.5">{action_title}</h2>
+                        <p class="text-xs {status_text_color} mt-2 font-medium leading-relaxed">
+                            {action_subtitle}
                         </p>
                     </div>
                 </div>
-                <div class="pt-6 border-t border-slate-200/60 mt-6">
-                    <div class="flex items-center justify-between text-sm">
-                        <span class="text-slate-500">Incrocio di trend (Crossover):</span>
-                        <span class="font-bold text-slate-900">{"ATTIVO ⚠️" if current_signal != prev_signal else "NO"}</span>
+                <div class="pt-4 border-t border-slate-200/60 mt-4 space-y-2 text-xs">
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Posizione del Modello:</span>
+                        <span class="font-bold text-slate-900 font-mono">{model_pos_title}</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-slate-500">Cambio Trend (Crossover):</span>
+                        <span class="font-bold text-slate-900">{"ATTIVO ⚠️" if current_signal != prev_signal else "NO (Invariato)"}</span>
                     </div>
                 </div>
             </div>
@@ -241,23 +277,37 @@ def generate_html_dashboard(df, close_price, sma_val, current_signal, prev_signa
                     <h3 class="text-4xl font-extrabold text-slate-900 font-mono tracking-tight">${close_price:,.2f}</h3>
                 </div>
                 <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
-                    <span>Chiusura giornaliera (Yahoo Finance)</span>
+                    <span>Distanza dalla SMA 273:</span>
+                    <span class="font-bold font-mono {'text-emerald-600' if close_price >= sma_val else 'text-rose-600'}">
+                        {distance_pct:+.2f}%
+                    </span>
                 </div>
             </div>
 
             <!-- Metric Card 2: SMA 273 -->
             <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm flex flex-col justify-between">
                 <div class="space-y-2">
-                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Media Mobile SMA 273</span>
+                    <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Soglia Media SMA 273</span>
                     <h3 class="text-4xl font-extrabold text-slate-900 font-mono tracking-tight">${sma_val:,.2f}</h3>
                 </div>
-                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs">
-                    <span class="text-slate-500">Distanza percentuale:</span>
-                    <span class="font-bold font-mono {'text-emerald-600' if close_price >= sma_val else 'text-rose-600'}">
-                        {((close_price / sma_val) - 1.0) * 100:+.2f}%
+                <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+                    <span>{'Rialzo richiesto per il Buy:' if close_price < sma_val else 'Cuscino di sicurezza:'}</span>
+                    <span class="font-bold font-mono text-slate-900">
+                        {f'+{required_gain_pct:.2f}%' if close_price < sma_val else f'{distance_pct:.2f}%'}
                     </span>
                 </div>
             </div>
+        </div>
+
+        <!-- Intuitive Explanation Callout Banner -->
+        <div class="rounded-2xl border border-blue-200 bg-blue-50/70 p-6 shadow-sm space-y-2">
+            <div class="flex items-center gap-2 text-blue-900 font-bold text-sm">
+                <svg class="w-5 h-5 text-blue-600 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>Guida all'Interpretazione del Report</span>
+            </div>
+            <p class="text-xs text-slate-700 leading-relaxed font-sans">
+                {intuitive_explanation}
+            </p>
         </div>
 
         <!-- Chart -->
@@ -446,28 +496,39 @@ def main():
     generate_html_dashboard(df, close_price, sma_val, current_signal, prev_signal, last_update_str)
     
     # 5. Prepare Telegram notification message
-    status = "🟢 COMPRARE BTC / LONG" if current_signal == 1 else "🔴 VENDERE BTC / CASH (USDT)"
-    action_info = ""
-    
-    if current_signal != prev_signal:
-        action_info = "⚠️ <b>CAMBIO DI SEGNALE RILEVATO!</b> ⚠️\n"
-        if current_signal == 1:
-            action_info += "👉 Azione: acquista BTC al prezzo corrente (Close)."
-        else:
-            action_info += "👉 Azione: vendi BTC e converti interamente in USDT."
-    else:
-        action_info = "Trend invariato. Nessuna operazione richiesta."
-        
     distance_pct = ((close_price / sma_val) - 1.0) * 100
+    required_gain_pct = ((sma_val / close_price) - 1.0) * 100
+    
+    if current_signal == 1:
+        trend_status = "🟢 RIALZISTA (Prezzo sopra la SMA 273)"
+        model_pos = "🚀 100% BITCOIN (LONG)"
+        if current_signal != prev_signal:
+            action_info = "⚠️ <b>NUOVO SEGNALE: COMPRARE BTC</b>\n👉 <i>Azione: Acquista BTC al prezzo di chiusura corrente.</i>"
+        else:
+            action_info = "🟢 <b>MANTIENI POSIZIONE IN BTC</b>\n👉 <i>Trend rialzista invariato. Nessuna operazione richiesta.</i>"
+        note_text = f"Il prezzo attuale (${close_price:,.2f}) è del {distance_pct:+.2f}% sopra la SMA 273. La strategia raccomanda di rimanere al 100% investiti in Bitcoin."
+    else:
+        trend_status = "🔴 RIBASSISTA (Prezzo sotto la SMA 273)"
+        model_pos = "🛡️ 100% LIQUIDITÀ (USDT)"
+        if current_signal != prev_signal:
+            action_info = "⚠️ <b>NUOVO SEGNALE: VENDERE BTC</b>\n👉 <i>Azione: Vendi BTC e converti interamente in USDT.</i>"
+        else:
+            action_info = "⚪ <b>MANTIENI LIQUIDITÀ IN USDT</b>\n👉 <i>Nessun acquisto da fare. Il modello resta a riposo in liquidità.</i>"
+        note_text = (
+            f"BTC è del {abs(distance_pct):.2f}% sotto la media (${sma_val:,.2f}). Per rientrare al rialzo serve un +{required_gain_pct:.2f}%.\n"
+            f"💡 <i>Nota: Se possiedi già BTC, la strategia teorica suggerisce la liquidità in USDT per evitare drawdown. Se scegli di non vendere, la strategia non comprerà nuovi BTC fino al superamento di ${sma_val:,.2f}.</i>"
+        )
     
     telegram_msg = (
         f"📊 <b>REPORT SETTIMANALE BTC-USDT (SMA 273)</b> 📊\n\n"
-        f"• <b>Stato Trend</b>: {status}\n"
-        f"• <b>Prezzo BTC (Close)</b>: ${close_price:,.2f}\n"
-        f"• <b>Media SMA 273</b>: ${sma_val:,.2f}\n"
-        f"• <b>Distanza dalla Media</b>: {distance_pct:+.2f}%\n\n"
-        f"💡 <b>Azione</b>: {action_info}\n\n"
-        f"🔗 <i>Grafici e storico aggiornati:</i> https://davide6600.github.io/Momentum-trading-crypto/output_btc/dashboard.html"
+        f"📈 <b>Trend di Mercato</b>: {trend_status}\n"
+        f"💼 <b>Posizione Modello</b>: {model_pos}\n"
+        f"⚡ <b>Azione Settimana</b>:\n{action_info}\n\n"
+        f"💵 <b>Prezzo BTC (Close)</b>: ${close_price:,.2f}\n"
+        f"📉 <b>Soglia SMA 273</b>: ${sma_val:,.2f}\n"
+        f"📏 <b>Distanza dalla Media</b>: {distance_pct:+.2f}%\n\n"
+        f"ℹ️ <b>Contesto Strategia</b>:\n{note_text}\n\n"
+        f"🔗 <i>Dashboard live e grafico:</i> https://davide6600.github.io/Momentum-trading-crypto/output_btc/dashboard.html"
     )
     
     print("\nCalculated Signal Status:")
@@ -475,7 +536,7 @@ def main():
     print(f"BTC Close: ${close_price:,.2f}")
     print(f"SMA 273: ${sma_val:,.2f}")
     print(f"Signal: {'BUY' if current_signal == 1 else 'CASH'}")
-    print(f"Action: {action_info}")
+    print(f"Action Title: {action_info}")
     print("--------------------------------------------------------------------------------")
     
     # 6. Send Telegram if keys exist
